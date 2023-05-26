@@ -1,0 +1,15 @@
+[api]
+port = "8080"
+base_url_freterapido="https://sp.freterapido.com/api/v3/quote/simulate"    
+key_token="aaaaaa"
+key_platformcode="aaaa"
+dispatcher_cnpj=55555
+dispatcher_zipcode=6666   
+
+[database]
+user = "postgres"
+pass = "postgres"
+host = "localhost"
+name = "frete_rapido"
+port = 5432
+driver = "postgres"
