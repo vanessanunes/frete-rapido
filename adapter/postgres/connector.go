@@ -1,7 +1,6 @@
 package postgres
 
 import (
-	"context"
 	"database/sql"
 	"fmt"
 	"log"
@@ -11,14 +10,7 @@ import (
 	"github.com/vanessanunes/frete-rapido/configs"
 )
 
-type PoolInterface interface {
-	Close()
-	Exec(sql string, arguments ...interface{}) (sql.Result, error)
-	Query(sql string, args ...interface{}) (sql.Rows, error)
-	QueryRow(sql string, args ...interface{}) sql.Row
-}
-
-func OpenConnection(context context.Context) *sql.DB {
+func OpenConnection() *sql.DB {
 	conf := configs.GetDB()
 	sc := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=disable",
 		conf.Host, conf.Port, conf.User, conf.Pass, conf.Database)
@@ -31,5 +23,6 @@ func OpenConnection(context context.Context) *sql.DB {
 		log.Println(err)
 		conn.Close()
 	}
+
 	return conn
 }
