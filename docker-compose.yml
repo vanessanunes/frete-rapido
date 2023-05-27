@@ -1,0 +1,18 @@
+version: '3.7'
+
+services:
+  db:
+    image: postgres
+    restart: always
+    container_name: frete_db
+    ports:
+      - "${POSTGRES_PORT}:5432"
+    env_file:
+      - .env
+    environment:
+      POSTGRES_USER: "${POSTGRES_USER}"
+      POSTGRES_PASSWORD: "${POSTGRES_PASSWORD}"
+      POSTGRES_DB: "${POSTGRES_DB}"
+      POSTGRES_HOST: "${POSTGRES_HOST}"
+    volumes:
+      - ./configs/initdb.sql:/docker-entrypoint-initdb.d/create_tables.sql
