@@ -2,7 +2,6 @@ package quoterepository
 
 import (
 	"database/sql"
-	"log"
 
 	"github.com/vanessanunes/frete-rapido/core/domain"
 	"github.com/vanessanunes/frete-rapido/core/domain/integration"
@@ -18,7 +17,7 @@ func ConnectionRepository(db *sql.DB) *Connection {
 	return &Connection{db}
 }
 
-func (conn *Connection) Save(respIntegration integration.ResponseIntegration) {
+func (conn *Connection) Save(respIntegration integration.ResponseIntegration) (id string) {
 	data := respIntegration.Dispatchers
 	var dispatchersList []domain.Dispatchers
 	var offersList []domain.Offers
@@ -57,18 +56,17 @@ func (conn *Connection) Save(respIntegration integration.ResponseIntegration) {
 				},
 			})
 		}
-		id := conn.SaveDispatcher(dispatchersList)
+		id = conn.SaveDispatcher(dispatchersList)
 		conn.SaveOffer(offersList, id)
+		return id
 	}
+	return id
 }
 
 func (conn *Connection) SaveDispatcher(dispatchers []domain.Dispatchers) (id string) {
 	query := `INSERT INTO dispatcher (id, request_id, registered_number_shipper, registered_number_dispatcher, zipcode_origin) VALUES ($1, $2, $3, $4, $5) RETURNING ID`
 	dispatcher := dispatchers[0]
-	err := conn.db.QueryRow(query, &dispatcher.ID, &dispatcher.RequestID, &dispatcher.RegisteredNumberShipper, &dispatcher.RegisteredNumberDispatcher, &dispatcher.ZipcodeOrigin).Scan(&id)
-	if err != nil {
-		log.Printf("Ocorreu algum erro ao salvar a request. Por favor, tente novemente! %v", err)
-	}
+	conn.db.QueryRow(query, &dispatcher.ID, &dispatcher.RequestID, &dispatcher.RegisteredNumberShipper, &dispatcher.RegisteredNumberDispatcher, &dispatcher.ZipcodeOrigin).Scan(&id)
 	return id
 }
 
