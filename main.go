@@ -20,8 +20,6 @@ func init() {
 }
 
 func main() {
-	log.Println("Hoir")
-
 	conn := postgres.OpenConnection()
 	defer conn.Close()
 
@@ -32,7 +30,8 @@ func main() {
 	}
 
 	r := chi.NewRouter()
-	r.Post("/", handler.Create)
+	r.Post("/quote", handler.Create)
+	r.Get("/metrics", handler.Metrics)
 
 	http.ListenAndServe(fmt.Sprintf(":%s", "8080"), r)
 }
