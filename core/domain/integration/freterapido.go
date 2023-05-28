@@ -13,18 +13,12 @@ import (
 
 func SendRequest(quoteRequest dto.CreateQuoteRequest) ResponseIntegration {
 	api := configs.GetServer()
-	recipinetZipcode, _ := strconv.Atoi(quoteRequest.Recipient.Address.ZipCode)
-	dispatcherZipcode, err := strconv.Atoi(api.DispatcherZipcode)
-
-	if err != nil {
-		log.Println("erro no zipcode")
-	}
 
 	shipper := NewShipper()
 	recipient := Recipient{
-		Type:    1,
-		Country: "BRA",
-		Zipcode: recipinetZipcode,
+		Type:    api.RecipientType,
+		Country: api.RecipientCountry,
+		Zipcode: api.DispatcherZipcode,
 	}
 
 	volumesRequest := quoteRequest.Volumes
@@ -46,7 +40,7 @@ func SendRequest(quoteRequest dto.CreateQuoteRequest) ResponseIntegration {
 	var dispatchers []DispatchersRequest
 	dispatchers = append(dispatchers, DispatchersRequest{
 		RegisteredNumber: api.DispatcherCNPJ,
-		Zipcode:          int32(dispatcherZipcode),
+		Zipcode:          api.DispatcherZipcode,
 		Volumes:          volumeSend,
 	})
 

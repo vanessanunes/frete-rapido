@@ -24,7 +24,9 @@ type ServerAPI struct {
 	KeyToken          string
 	KeyPlataformCode  string
 	DispatcherCNPJ    string
-	DispatcherZipcode string
+	DispatcherZipcode int32
+	RecipientType     int
+	RecipientCountry  string
 }
 
 func init() {
@@ -56,7 +58,9 @@ func Load() error {
 		KeyToken:          viper.GetString("api.key_token"),
 		KeyPlataformCode:  viper.GetString("api.key_platformcode"),
 		DispatcherCNPJ:    viper.GetString("api.dispatcher_cnpj"),
-		DispatcherZipcode: viper.GetString("api.dispatcher_zipcode"),
+		DispatcherZipcode: viper.GetInt32("api.dispatcher_zipcode"),
+		RecipientType:     viper.GetInt("api.recipient_type"),
+		RecipientCountry:  viper.GetString("api.recipient_country"),
 	}
 
 	return nil

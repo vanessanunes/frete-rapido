@@ -5,6 +5,8 @@ key_token="aaaaaa"
 key_platformcode="aaaa"
 dispatcher_cnpj=55555
 dispatcher_zipcode=6666   
+recipient_type=1
+recipient_country="BRA" 
 
 [database]
 user = "postgres"

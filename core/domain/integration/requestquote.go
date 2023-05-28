@@ -26,7 +26,7 @@ type Recipient struct {
 	RegisteredNumber string `json:"registered_number"`
 	StateInscription string `json:"state_inscription"`
 	Country          string `json:"country"`
-	Zipcode          int    `json:"zipcode"`
+	Zipcode          int32  `json:"zipcode"`
 }
 
 type DispatchersRequest struct {
