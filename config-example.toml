@@ -11,7 +11,7 @@ recipient_country="BRA"
 [database]
 user = "postgres"
 pass = "postgres"
-host = "localhost"
+host = "frete_db"
 name = "frete_rapido"
 port = 5432
 driver = "postgres"

@@ -16,3 +16,26 @@ services:
       POSTGRES_HOST: "${POSTGRES_HOST}"
     volumes:
       - ./configs/initdb.sql:/docker-entrypoint-initdb.d/create_tables.sql
+    networks:
+      - internal
+
+  api:
+    container_name: frete_api
+    restart: always
+    build: .
+    ports:
+      - ${SERVER_PORT}:8080
+    volumes:
+      - .:/app
+    env_file:
+      - .env
+    networks:
+      - default
+      - internal
+
+networks:
+  default:
+    external: true
+    name: frete_default
+  internal:
+    internal: true
