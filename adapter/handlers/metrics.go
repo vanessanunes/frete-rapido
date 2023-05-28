@@ -15,7 +15,9 @@ func (repo Repository) Metrics(w http.ResponseWriter, r *http.Request) {
 	metrics, err := repo.DB.GetMetrics(lastQuoteI)
 	if err != nil {
 		log.Printf("Erro ao gerar metricas: %v", err)
-		ResponseJson(w, 500, "Erro ao gerar metricas. Por favor, tente mais tarde.")
+		ResponseJson(w, 500, ResponseError{
+			Erro: "Erro ao gerar metricas. Por favor, tente mais tarde.",
+		})
 		return
 	}
 	ResponseJson(w, 200, metrics)

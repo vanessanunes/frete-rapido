@@ -4,7 +4,6 @@ import (
 	"net/http"
 
 	"github.com/vanessanunes/frete-rapido/adapter/postgres/quoterepository"
-	"github.com/vanessanunes/frete-rapido/core/domain"
 	"github.com/vanessanunes/frete-rapido/core/domain/integration"
 
 	"github.com/vanessanunes/frete-rapido/core/dto"
@@ -17,38 +16,28 @@ type Repository struct {
 func (repo Repository) Create(w http.ResponseWriter, r *http.Request) {
 	quoteRequest, err := dto.FromJSONCreateQuoteRequest(r.Body)
 	if err != nil {
-		w.Write([]byte(err.Error()))
-		ResponseJson(w, 500, "Ocorreu algum erro ao tentar parsear o Body. Por favor verifique e tente novamente!")
+		ResponseJson(w, 500, ResponseError{
+			Erro: "Ocorreu algum erro ao tentar parsear o Body. Por favor verifique e tente novamente!",
+		})
 		return
 	}
 
-	resp := integration.SendRequest(*quoteRequest)
-
-	repo.DB.Save(resp)
-
-	var carriers []domain.Carrier
-
-	for i := 0; i < len(resp.Dispatchers); i++ {
-		offers := resp.Dispatchers[i].Offers
-		for j := 0; j < len(offers); j++ {
-			carriers = append(carriers, domain.Carrier{
-				Name:     offers[j].Carrier.Name,
-				Service:  offers[j].Service,
-				Deadline: offers[j].DeliveryTime.Days,
-				Price:    offers[j].CostPrice,
-			})
-		}
+	resp, err := integration.SendRequest(*quoteRequest)
+	if err != nil {
+		ResponseJson(w, 500, ResponseError{
+			Erro: "Erro ao enviar request para serviço de integração.",
+		})
+		return
 	}
-
-	quote := domain.Quote{
-		Carrier: carriers,
-	}
+	id := repo.DB.Save(resp)
+	carriers, err := repo.DB.GetCarriers(id)
 
 	if err != nil {
-		w.Write([]byte(err.Error()))
-		ResponseJson(w, 500, "Houve algum erro na request")
+		ResponseJson(w, 500, ResponseError{
+			Erro: "Erro ao buscar informações sobre frete.",
+		})
 		return
 	}
 
-	ResponseJson(w, 200, quote)
+	ResponseJson(w, 200, carriers)
 }
