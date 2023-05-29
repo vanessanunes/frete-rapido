@@ -11,7 +11,7 @@ import (
 	"github.com/vanessanunes/frete-rapido/core/dto"
 )
 
-func SendRequest(quoteRequest dto.CreateQuoteRequest) ResponseIntegration {
+func SendRequest(quoteRequest dto.CreateQuoteRequest) (ResponseIntegration, error) {
 	api := configs.GetServer()
 
 	shipper := NewShipper()
@@ -68,6 +68,7 @@ func SendRequest(quoteRequest dto.CreateQuoteRequest) ResponseIntegration {
 
 	if err != nil {
 		log.Fatal(err)
+		return ResponseIntegration{}, err
 	}
 
 	defer resp.Body.Close()
@@ -77,8 +78,9 @@ func SendRequest(quoteRequest dto.CreateQuoteRequest) ResponseIntegration {
 	err = json.NewDecoder(resp.Body).Decode(&res)
 	if err != nil {
 		log.Fatal(err)
+		return ResponseIntegration{}, err
 	}
 
-	return res
+	return res, err
 
 }

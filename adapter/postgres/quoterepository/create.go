@@ -2,6 +2,7 @@ package quoterepository
 
 import (
 	"database/sql"
+	"log"
 
 	"github.com/vanessanunes/frete-rapido/core/domain"
 	"github.com/vanessanunes/frete-rapido/core/domain/integration"
@@ -17,7 +18,7 @@ func ConnectionRepository(db *sql.DB) *Connection {
 	return &Connection{db}
 }
 
-func (conn *Connection) Save(respIntegration integration.ResponseIntegration) (id string) {
+func (conn Connection) Save(respIntegration integration.ResponseIntegration) (id string) {
 	data := respIntegration.Dispatchers
 	var dispatchersList []domain.Dispatchers
 	var offersList []domain.Offers
@@ -66,7 +67,11 @@ func (conn *Connection) Save(respIntegration integration.ResponseIntegration) (i
 func (conn *Connection) SaveDispatcher(dispatchers []domain.Dispatchers) (id string) {
 	query := `INSERT INTO dispatcher (id, request_id, registered_number_shipper, registered_number_dispatcher, zipcode_origin) VALUES ($1, $2, $3, $4, $5) RETURNING ID`
 	dispatcher := dispatchers[0]
-	conn.db.QueryRow(query, &dispatcher.ID, &dispatcher.RequestID, &dispatcher.RegisteredNumberShipper, &dispatcher.RegisteredNumberDispatcher, &dispatcher.ZipcodeOrigin).Scan(&id)
+	row := conn.db.QueryRow(query, &dispatcher.ID, &dispatcher.RequestID, &dispatcher.RegisteredNumberShipper, &dispatcher.RegisteredNumberDispatcher, &dispatcher.ZipcodeOrigin).Scan(&id)
+	if row != nil {
+		log.Printf("Erro ao salvar informações de cotação: %v", row)
+		return
+	}
 	return id
 }
 
@@ -78,11 +83,14 @@ func (conn *Connection) SaveOffer(offers []domain.Offers, id string) {
 		conn.db.QueryRow(sql, id, offers[col].Offer, offers[col].TableReference, offers[col].SimulationType, offers[col].Service, offers[col].DeliveryTimeDays, offers[col].DeliveryTimeEstimatedDate, offers[col].Expiration, offers[col].CostPrice, offers[col].FinalPrice, offers[col].WeightsReal, offers[col].WeightsUsed, offers[col].OriginalDeliveryTimeDays, offers[col].OriginalDeliveryTimeEstimatedDate).Scan(&idOffer)
 		carrier := domain.CarrierM(offers[col].Carrier)
 		carrier.IdOffer = idOffer
-		go conn.SaveCarrier(carrier)
+		conn.SaveCarrier(carrier)
 	}
 }
 
 func (conn *Connection) SaveCarrier(carrier domain.CarrierM) {
 	sql := `INSERT INTO carrier (id_offer, "name", registered_number, state_inscription, logo, reference, company_name) VALUES($1, $2, $3, $4, $5, $6, $7);`
-	conn.db.QueryRow(sql, &carrier.IdOffer, &carrier.Name, &carrier.RegisteredNumber, &carrier.StateInscription, &carrier.Logo, &carrier.Reference, &carrier.CompanyName)
+	row := conn.db.QueryRow(sql, &carrier.IdOffer, &carrier.Name, &carrier.RegisteredNumber, &carrier.StateInscription, &carrier.Logo, &carrier.Reference, &carrier.CompanyName)
+	if row != nil {
+		log.Printf("Erro ao salvar informações de serviço: %v", row)
+	}
 }

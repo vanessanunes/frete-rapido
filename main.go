@@ -33,5 +33,9 @@ func main() {
 	r.Post("/quote", handler.Create)
 	r.Get("/metrics", handler.Metrics)
 
-	http.ListenAndServe(fmt.Sprintf(":%s", "8080"), r)
+	api := configs.GetServer()
+
+	log.Printf("%v listining", api.Port)
+
+	http.ListenAndServe(fmt.Sprintf(":%s", api.Port), r)
 }

@@ -17,6 +17,7 @@ services:
     volumes:
       - ./configs/initdb.sql:/docker-entrypoint-initdb.d/create_tables.sql
     networks:
+      - default
       - internal
 
   api:
