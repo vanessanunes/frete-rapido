@@ -21,6 +21,8 @@ Um ponto importante é que os valores setadas em ambos os arquivos pro database 
 
 As configurações de API no `.config.toml` é a api que estamos usando de terceiros. Então pra isso você precisa dos dados certinhos!
 
+Também dê o `go mod tidy` para instalar as dependencias que estão no arquivo `mod.go`
+
 ## hora de rodar :)
 
 Pra rodar, bora executar o docker. Tanto o banco de dados quanto a nossa aplicação estão lá.
